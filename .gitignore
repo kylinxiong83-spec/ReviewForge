@@ -6,6 +6,7 @@ __pycache__/
 *.egg-info/
 *.db
 .next/
+out/
 node_modules/
 *.tsbuildinfo
 coverage/
