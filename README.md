@@ -2,6 +2,8 @@
 
 **Evidence-driven pull request review for engineering teams.** ReviewForge accepts a unified diff or a signed GitHub pull-request webhook, identifies high-confidence risks, and returns line-level findings with concrete fixes and an auditable score.
 
+**[Try the live demo](https://reviewforge-kylin.daintygoby.chatgpt.site)** — paste a unified diff and receive an instant review. The public demo runs the deterministic reviewer entirely in your browser, so pasted source code is not uploaded. The full Docker stack adds API persistence, GitHub webhooks, background jobs, and audit history.
+
 ## Why this project exists
 
 AI code-review demos often produce confident comments without showing how the result was derived. ReviewForge starts with a deterministic, testable rule engine and treats model output as an optional reviewer rather than an unquestioned authority. Every finding includes a source line, category, severity, confidence, explanation, and recommendation.
@@ -96,4 +98,3 @@ The deterministic engine is tested against small, labeled diffs. The next milest
 ## Author
 
 Built by **Kylin Xiong**, a University of Washington computer science student interested in applied AI, reliable software systems, and computer vision.
-
