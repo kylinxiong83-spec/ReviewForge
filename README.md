@@ -2,7 +2,7 @@
 
 **Evidence-driven pull request review for engineering teams.** ReviewForge accepts a unified diff or a signed GitHub pull-request webhook, identifies high-confidence risks, and returns line-level findings with concrete fixes and an auditable score.
 
-**[Try the live demo](https://reviewforge-kylin.daintygoby.chatgpt.site)** — paste a unified diff and receive an instant review. The public demo runs the deterministic reviewer entirely in your browser, so pasted source code is not uploaded. The full Docker stack adds API persistence, GitHub webhooks, background jobs, and audit history.
+**[Try the live demo](https://reviewforge-kylin.daintygoby.chatgpt.site)** — paste a unified diff and receive an instant review. The hosted server analyzes the diff and stores the score, findings, and review metadata in a durable D1 database; the submitted diff is transmitted over HTTPS but is not persisted. The Docker stack provides the reference FastAPI/PostgreSQL implementation with GitHub webhooks and background jobs.
 
 ## Why this project exists
 
@@ -20,6 +20,18 @@ AI code-review demos often produce confident comments without showing how the re
 - Unit tests and GitHub Actions CI
 
 ## Architecture
+
+The public demo uses a same-origin edge API and D1 so it can persist review history without retaining submitted source:
+
+```mermaid
+flowchart LR
+  Browser[Next.js dashboard] -->|HTTPS diff| Edge[Worker API]
+  Edge --> Rules[Deterministic reviewer]
+  Rules --> History[(D1 review metadata)]
+  History --> Browser
+```
+
+The repository also includes a containerized reference architecture for team deployments:
 
 ```mermaid
 flowchart LR
