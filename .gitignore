@@ -1,0 +1,12 @@
+.env
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.egg-info/
+*.db
+.next/
+node_modules/
+*.tsbuildinfo
+coverage/
+.DS_Store

@@ -1,0 +1,64 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: reviewforge
+      POSTGRES_USER: reviewforge
+      POSTGRES_PASSWORD: reviewforge
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U reviewforge"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://reviewforge:reviewforge@postgres:5432/reviewforge
+      REDIS_URL: redis://redis:6379/0
+      REVIEWFORGE_EAGER: "false"
+      GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET:-replace-me}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    build: ./backend
+    command: celery -A app.tasks.celery worker --loglevel=INFO
+    environment:
+      DATABASE_URL: postgresql+psycopg://reviewforge:reviewforge@postgres:5432/reviewforge
+      REDIS_URL: redis://redis:6379/0
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  web:
+    build: ./frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
+
