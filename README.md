@@ -2,7 +2,7 @@
 
 **Evidence-driven pull request review for engineering teams.** ReviewForge accepts a unified diff or a signed GitHub pull-request webhook, identifies high-confidence risks, and returns line-level findings with concrete fixes and an auditable score.
 
-**[Try the live demo](https://reviewforge-kylin.daintygoby.chatgpt.site)** — paste a unified diff and receive an instant review. The hosted server analyzes the diff and stores the score, findings, and review metadata in a durable D1 database; the submitted diff is transmitted over HTTPS but is not persisted. The Docker stack provides the reference FastAPI/PostgreSQL implementation with GitHub webhooks and background jobs.
+**[Try the live demo](https://reviewforge-kylin.daintygoby.chatgpt.site)** — paste a unified diff and receive an instant review. Public visitors receive server-generated results without database persistence. Authenticated owner reviews store only the score, findings, and metadata in an owner-isolated D1 history; submitted diffs are transmitted over HTTPS but never persisted. The Docker stack provides the reference FastAPI/PostgreSQL implementation with GitHub webhooks and background jobs.
 
 ## Why this project exists
 
@@ -28,7 +28,7 @@ flowchart LR
   Browser[Next.js dashboard] -->|HTTPS diff| Edge[Worker API]
   Edge --> Rules[Deterministic reviewer]
   Rules --> History[(D1 review metadata)]
-  History --> Browser
+  History -->|authenticated owner only| Browser
 ```
 
 The repository also includes a containerized reference architecture for team deployments:
@@ -94,6 +94,7 @@ The deterministic engine is tested against small, labeled diffs. The next milest
 ## Security and limitations
 
 - Diff size is limited to 250 KB at the API boundary.
+- Public demo reviews are not persisted; saved history requires authenticated owner access.
 - Webhooks are rejected unless the HMAC signature matches.
 - Findings are suggestions for human reviewers, not approval decisions.
 - The rule engine currently inspects added lines and does not build a full program dependency graph.
